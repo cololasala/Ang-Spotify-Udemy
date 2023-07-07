@@ -1,0 +1,4 @@
+<div class="history-page">
+    <app-search (callBackEvent)="searched($event)"></app-search>
+    <app-play-list-body [tracks]="dataTracks | async"></app-play-list-body>
+</div>

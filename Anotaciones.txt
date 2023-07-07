@@ -1,0 +1,82 @@
+ng new angular-spotify --routing --styles=scss -> creo aplicacion sin necesidad de responder las preguntas
+ng s --o -> inicio app
+ng s --o --port=4100 -> inicia en puerto 4100
+ng s --o --host=0.0.0.0 --port=4100 -> si pongo en el navegador mi ip local y luego el puerto asi http://192.168.1.36:4100/
+si se pone en el navegador del celular tambien anda (si y cuando este conectado a la misma red de la pc)
+
+se debe levantar la API para back -> npm start
+libreria de iconos -> https://iconscout.com/unicons/getting-started/line
+Repositorio -> https://github.com/leifermendez/angular-spotify
+
+Estructura de carpetas usadas "scaffolding".-Core -Data -Modules -Shared
+
+el ng g c, si no especificamos se creara a partir de la ruta raiz /app
+
+--------------------------------
+Para poder usar componentes del shared module se deben poner en exports y luego solo se importa el modulo shared en
+los modulos que desean usar esos componentes.
+En page seria nuestro componente "contenedor", de cada uno de los modulos.
+
+La directiva routerLink puede usarse a cualquier elemento html, (no necesariaamente solo un <a></a>).
+Se debe importar el modulo RouterModule para usarse.
+
+Label for, el for matchea con el id del input.
+Para usar reactive forms se debe importar ReactiveFormsModule. Para usar ngModel se necesita FormsModule.
+
+Con los eventEmmitters podemos emitir y tambien subscribirnos para obtener el valor actual.
+----------------------------------
+
+https://www.learnrxjs.io/
+Rxjs es una libreria de programacion reactiva, utilizado para simplificar el codigo asincronico, basado en eventos
+a traves de secuencias observables.
+of -> permite crear un observable desde cualquier tipo de datos, ej of([1,2,3,4,5]);
+
+HttpClient, todas sus peticiones se desubcriben por defecto cuando el componente se destruye.
+
+se instalo -> npm install ngx-cookie-service@12.0.3
+
+Nosotros podemos pasar el token directamente en las peticiones ejemplo:
+this.http.get(`${this.apiUrl}/tracks` , {headers: new HttpHeaders({ authorization: `Bearer ${this.cookieService.get('token')}`})})
+Sin embargo esto no se usa y se hace en el interceptor. Los interceptores inyectan propiedades en las peticiones.
+
+Cuando se usa un | async en nuestro template, angular hace que se cancelen las peticiones anteriores y solo se tome la ultima
+peticion.
+En el componente HistoryComponent esto nos sirve hacerlo asi para cuando tenemos una conexion lenta y sigo escribiendo se 
+puedan cancelar las peticiones.
+
+Se puede definir a un observable como un flujo de datos, y el Observer seran las 3 funciones que nos permiten interactuar
+con el Observable :
+{ complete, next, error }.
+
+Subject, es un Observable y un Observer, es decir, puedo subscribirme como un observable o usar next, error, complete del Observer.
+El subject primero necesita subscribirse y luego enviar la info con el next.
+
+BehaviorSubject, es muy parecido a Subject lo que tiene es que necesita un valor inicial.
+
+----------------------------------
+Testing Jasmine y Karma
+
+Karma es una libreria encargada de ejecutar las pruebas con Jasmine. Jasmine es un framework de comportamiento de usuarios que se encarga de testear
+bloques de codigo.
+Karma corre las pruebas y Jasmine es la sintaxis con las que creamos las pruebas.
+
+TestBed nos permite montar todo un modulo de testing.
+
+ng test -> corre los test
+
+Las pruebas de Jasmine, estan configuradas para tener un plazo de prueba de 5 segundos.
+
+Poniendo una "f" al principio de un describe -> fdescribe('SomeComponent', () => {...}
+Hace que solo se corran esos test
+
+Se agrego "codeCoverage": true, en angular json para que al ejecutar un ng test se crea un reporte de cobertura. podemos
+abrir el index.html para verlo.
+
+----------------------------------
+*ngFor tips
+con first y last obtenemos el primero y ultimo elemento.
+con even y odd obtenemos booleanos true o false si es para o impar
+
+<div *ngFor="let item of [1,2,3,4,5]"; let indice = index; let primero = first; let ultimo = last; let par = even; let impar = odd>
+   {{ item }} - {{ indice }} - {{ par }} - {{ impar }}
+</div>
