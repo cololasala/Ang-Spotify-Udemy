@@ -80,3 +80,20 @@ con even y odd obtenemos booleanos true o false si es para o impar
 <div *ngFor="let item of [1,2,3,4,5]"; let indice = index; let primero = first; let ultimo = last; let par = even; let impar = odd>
    {{ item }} - {{ indice }} - {{ par }} - {{ impar }}
 </div>
+
+----------------------------------
+Angular 16
+
+Se debe seguir la guia de https://update.angular.io/, algunos paquetes deben actulizarse otros con "--force" pueden andar.
+A partir de angular 14 se agregan standalone components (componentes independientes que no requieren modulos). Para migrar a estos componentes
+puede usarse -> ng generate @angular/core:standalone y se ejecutan las opciones paso a paso. Luego se crean archivos de rutas y se eliminan
+todos los rounting-modules.
+Para crear un componente standalone -> ng g c --standalone, si se quiere que por defecto al hacer ng g c se haga standalone, se puede configurar en
+el angular.json asi:
+"@schematics/angular:component": {
+	"standalone": true
+}
+
+-Ahora se implementa self-closing-tag, se puede usar esto -> <app-card-component /> , en lugar de -> <app-card-component></app-card-component>
+-Se puede inyectar directamente algo con inject de @angular/core -> inject(HttpClient).
+-Los guards ahora pueden ser funcionales. Se llaman functional guards. Tambien existen los functionals injetors.
