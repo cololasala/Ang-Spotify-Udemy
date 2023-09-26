@@ -83,6 +83,7 @@ con even y odd obtenemos booleanos true o false si es para o impar
 
 ----------------------------------
 Angular 16
+Se trabajan algunos cambios en la rama -> angular-version-16
 
 Se debe seguir la guia de https://update.angular.io/, algunos paquetes deben actulizarse otros con "--force" pueden andar.
 A partir de angular 14 se agregan standalone components (componentes independientes que no requieren modulos). Para migrar a estos componentes
@@ -97,3 +98,8 @@ el angular.json asi:
 -Ahora se implementa self-closing-tag, se puede usar esto -> <app-card-component /> , en lugar de -> <app-card-component></app-card-component>
 -Se puede inyectar directamente algo con inject de @angular/core -> inject(HttpClient).
 -Los guards ahora pueden ser funcionales. Se llaman functional guards. Tambien existen los functionals injetors.
+
+Signal
+Usar signal es una manera de trabajar de manera asincronica, se aplican a nivel componente. Mejora el performance de la app.
+Angular utiliza la libreria zone.js que es la encargada de saber si "algo" cambio en la app en algun momento, luego llama al change detection para avisar el cambio.
+En cambio, un signal avisa el mismo cuando el cambio (es decir, tiene un nuevo valor), de esa manera se avisa el cambio y no es necesario "estar atento a los cambios" con el zone.js.

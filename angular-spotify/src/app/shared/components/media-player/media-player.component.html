@@ -17,7 +17,7 @@
 
 <!-- ZONE TEMPLATES -->
 <ng-template #artistZone>
-  <div *ngIf="multimediaService.trackInfo$ | async as mockCover" class="artist-inside">
+  <div *ngIf="multimediaService.trackInfoSignal() as mockCover" class="artist-inside"> <!-- Ang 16 se cambian todos los async por signals -->
     <img [src]="mockCover.cover" alt="" class="cover" />
     <div class="track-info">
       <h3 class="track-title">{{ mockCover.name }}</h3>
@@ -31,30 +31,30 @@
   </div>
 </ng-template>
 
-<!-- uso de  multimediaService con async pipe-->
+<!-- uso de  multimediaService con signals-->
 <ng-template #playerZone>
   <div class="player-controls-inside">
     <div class="buttons-media">
-      <button class="arrow btn" (click)="previusTrack()" [disabled]="(multimediaService.trackInfo$ | async) === undefined">
+      <button class="arrow btn" (click)="previusTrack()" [disabled]="(multimediaService.trackInfoSignal()) === undefined">
         <i class="uil uil-previous"></i>
       </button>
-      <button (click)="multimediaService.togglePlayer()" class="play btn" [disabled]="(multimediaService.trackInfo$ | async) === undefined">
+      <button (click)="multimediaService.togglePlayer()" class="play btn" [disabled]="(multimediaService.trackInfoSignal()) === undefined">
         <i [ngClass]="{
             'uil-play-circle': state === 'pause',
             'uil-pause-circle': state !== 'pause'
           }" class="uil"></i>
       </button>
-      <button class="arrow btn" (click)="nextTrack()" [disabled]="(multimediaService.trackInfo$ | async) === undefined">
+      <button class="arrow btn" (click)="nextTrack()" [disabled]="(multimediaService.trackInfoSignal()) === undefined">
         <i class="uil uil-step-forward"></i>
       </button>
     </div>
     <div class="media-linetime">
-      <div class="time">{{ multimediaService.timeElapsed$ | async }}</div>
-      <span #progressBar (click)="handlePosition($event)" class="time-progress" [ngClass]="{'time-progress-disabled':(multimediaService.trackInfo$ | async) === undefined}">
-        <span class="time-progress-live" [style.width]="(multimediaService.playerPercentage$ | async) + '%'"> <!-- Barra de progreso -->
+      <div class="time">{{ multimediaService.timeElapsedSignal()}}</div>
+      <span #progressBar (click)="handlePosition($event)" class="time-progress" [ngClass]="{'time-progress-disabled':(multimediaService.trackInfoSignal()) === undefined}">
+        <span class="time-progress-live" [style.width]="(multimediaService.playerPercentageSignal()) + '%'"> <!-- Barra de progreso -->
         </span>
       </span>
-      <div class="time">{{ multimediaService.timeRemaining$ | async }}</div>
+      <div class="time">{{ multimediaService.timeRemainingSignal()}}</div>
     </div>
   </div>
 </ng-template>

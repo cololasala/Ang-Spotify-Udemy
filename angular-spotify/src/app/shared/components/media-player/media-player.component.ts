@@ -2,11 +2,13 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  OnInit,
   ViewChild,
+  effect,
+  inject,
 } from '@angular/core';
 import { TrackModel } from '@core/models/track.model';
 import { TrackService } from '@modules/tracks/services/track.service';
+import { getTracks } from '@modules/tracks/services/track.servicev2';
 import { MultimediaService } from '@shared/services/multimedia/multimedia.service';
 import { Subscription } from 'rxjs';
 
@@ -15,42 +17,38 @@ import { Subscription } from 'rxjs';
   templateUrl: './media-player.component.html',
   styleUrls: ['./media-player.component.scss'],
 })
-export class MediaPlayerComponent implements OnInit, OnDestroy {
+export class MediaPlayerComponent implements OnDestroy {
   @ViewChild('progressBar') progressBar: ElementRef = new ElementRef('');
   listObservers$: Subscription[] = [];
   state = 'pause'; // estado del boton de reproduccion
   tracks: TrackModel[] = [];
   actualTrack: TrackModel; // cancion actual en el reproductor
   mutedTrack = false;
-  constructor(
-    public multimediaService: MultimediaService,
-    private trackService: TrackService
-  ) {} // al hacerse public puedo usarlo en el template
+  multimediaService = inject(MultimediaService);
+  trackService = inject(TrackService);
 
-  ngOnInit(): void {
-    const newSubscription = this.multimediaService.trackInfo$.subscribe(
-      (data: any) => {
-        // console.log('recibiendo track en media player', data);
-        this.actualTrack = data;
-      }
-    );
+  constructor() {
+    effect(() => { //Ang 16, el effect sirve para escuchar cambios de un signal 
+      const data = this.multimediaService.trackInfoSignal();
+      if (data) this.actualTrack = data;
+    });
+    
+    getTracks().subscribe((data) => { //uso de funcion que inyecta HttpClient
+      console.log('Tracks desde trackservice v2');
+      this.tracks = data;
+    });
 
-    const tracksSubscritption = this.trackService
-      .getTracks()
-      .subscribe((data) => {
-        this.tracks = data;
-      });
+    effect(() => {
+      const status = this.multimediaService.playerStatusSignal();
+      if (status) this.state = status;
+    });
 
-    const toogleStatusSubscription =
-      this.multimediaService.playerStatus$.subscribe((data) => {
-        this.state = data;
-      });
-
+    /*
     this.listObservers$ = [
       newSubscription,
       toogleStatusSubscription,
       tracksSubscritption,
-    ];
+    ]; */
   }
 
   handlePosition(e: MouseEvent): void {
@@ -68,7 +66,7 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
       (t) => t._id === this.actualTrack._id - 1
     ); // buscamos la track anterior
     if (previusTrack) {
-      this.multimediaService.trackInfo$.next(previusTrack);
+      this.multimediaService.trackInfoSignal.set(previusTrack);
     }
   }
 
@@ -77,7 +75,7 @@ export class MediaPlayerComponent implements OnInit, OnDestroy {
       (t) => t._id === this.actualTrack._id + 1
     ); // buscamos la track siguiente
     if (nextTrack) {
-      this.multimediaService.trackInfo$.next(nextTrack);
+      this.multimediaService.trackInfoSignal.set(nextTrack);
     }
   }
 

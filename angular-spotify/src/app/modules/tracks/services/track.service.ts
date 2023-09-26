@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
-import * as DataRaw from '../../../data/track.json';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { TrackModel } from '@core/models/track.model';
 import { environment } from 'src/environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -44,16 +43,15 @@ export class TrackService {
       })
     );
   }
-
-  /* Retorna lista de tracks menos la primera */
-  getRandomTracks(): Observable<any> {
+  
+    /* Retorna lista de tracks menos la primera */
+    getRandomTracks(): Observable<any> {
     return this.http.get(`${this.apiUrl}/tracks`).pipe(
-      mergeMap(({ data }: any) => {       // mergeMap permite multiples subscripciones al mismo tiempo
-        return this.getSkipById(data, 1);
-      }),
-      /* tap((data) => console.log('Data service', data)) */  // tap permite hacer cosas luego de obtener la data
-    );
-  }
+        mergeMap(({ data }: any) => {       // mergeMap permite multiples subscripciones al mismo tiempo
+          return this.getSkipById(data, 1);
+        }),
+      );
+    }
 
   /*Promise retorna tracks distintas al id pasado por argumento */
   getSkipById(tracks: TrackModel[], id: number): Promise<TrackModel[]> {

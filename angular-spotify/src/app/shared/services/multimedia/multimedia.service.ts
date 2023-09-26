@@ -1,30 +1,22 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, effect, signal } from '@angular/core';
 import { TrackModel } from '@core/models/track.model';
-import { BehaviorSubject } from 'rxjs';
-
 @Injectable({
   providedIn: 'root',
 })
-export class MultimediaService {
+export class MultimediaService { //Ang V16 uso de signals
   callBack: EventEmitter<any> = new EventEmitter<any>();
-
-  public trackInfo$: BehaviorSubject<TrackModel | undefined> = new BehaviorSubject<TrackModel | undefined>(
-    undefined
-  ); // contiene las propiedades de la track
+  public trackInfoSignal = signal<TrackModel | undefined>(undefined);
   public audio: HTMLAudioElement = new Audio(); // reproductor
-  public timeElapsed$: BehaviorSubject<string> = new BehaviorSubject('00:00');
-  public timeRemaining$: BehaviorSubject<string> = new BehaviorSubject(
-    '-00:00'
-  );
-  public playerStatus$: BehaviorSubject<string> = new BehaviorSubject('pause');
-  public playerPercentage$: BehaviorSubject<number> = new BehaviorSubject(0);
+  public timeElapsedSignal = signal<string>('00:00');
+  public timeRemainingSignal = signal<string>('-00:00');
+  public playerStatusSignal = signal<string>('pause');
+  public playerPercentageSignal = signal<number>(0);
 
   constructor() {
-    this.trackInfo$.subscribe((data) => {
-     // console.log('recibiendo desde multiservice', data);
-      if (data) {
-        this.setAudio(data);
-      }
+    effect(() => {
+      //Ang V16
+      const dataInfo = this.trackInfoSignal();
+      if (dataInfo) this.setAudio(dataInfo);
     });
 
     this.listenAllEvents();
@@ -41,16 +33,16 @@ export class MultimediaService {
   private setPlayerStatus = (state: any) => {
     switch (state.type) {
       case 'play':
-        this.playerStatus$.next('play');
+        this.playerStatusSignal.set('play');
         break;
       case 'playing':
-        this.playerStatus$.next('playing');
+        this.playerStatusSignal.set('playing');
         break;
       case 'pause':
-        this.playerStatus$.next('pause');
+        this.playerStatusSignal.set('pause');
         break;
       default:
-        this.playerStatus$.next('ended');
+        this.playerStatusSignal.set('ended');
     }
   };
 
@@ -66,8 +58,8 @@ export class MultimediaService {
     // duration es el 100% -> la cuenta es (currentTime * 100) / duration
 
     const percentage = (currentTime * 100) / duration;
-    this. playerPercentage$.next(percentage);
-  }
+    this.playerPercentageSignal.set(percentage);
+  };
 
   setTimeElapsed(currentTime: number): void {
     const seconds = Math.floor(currentTime % 60); // tomo parte entera com Math.floor
@@ -79,7 +71,7 @@ export class MultimediaService {
     const displaySeconds = seconds < 10 ? `0${seconds}` : seconds.toString();
     const displayMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
 
-    this.timeElapsed$.next(`${displayMinutes}:${displaySeconds}`);
+    this.timeElapsedSignal.set(`${displayMinutes}:${displaySeconds}`);
   }
 
   setTimeRemaining(currentTime: number, duration: number): void {
@@ -90,7 +82,7 @@ export class MultimediaService {
     const displaySeconds = seconds < 10 ? `0${seconds}` : seconds.toString();
     const displayMinutes = minutes < 10 ? `0${minutes}` : minutes.toString();
 
-    this.timeRemaining$.next(`-${displayMinutes}:${displaySeconds}`);
+    this.timeRemainingSignal.set(`-${displayMinutes}:${displaySeconds}`);
   }
 
   public setAudio(track: TrackModel): void {
